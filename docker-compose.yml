@@ -1,0 +1,140 @@
+services:
+# --- PONTO DE ENTRADA PRINCIPAL ---
+  dashboard:
+    build:
+      context: ./grinmorio-DASHBOARD
+    container_name: grinmorio_dashboard
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+      - portainer
+      - mongo-express
+      - redis-commander
+    networks:
+      - app-network
+
+  # --- SERVIÇOS DE BACKEND ---
+  db:
+    image: mongo:latest
+    container_name: mongodb_dnd
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis_dnd
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  api:
+    build:
+      context: ./grinmorio-API
+    container_name: api-service
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_HOST=db
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - REDIS_HOST=redis
+      - JWT_SECRET=${JWT_SECRET}
+    networks:
+      - app-network
+
+  bot:
+    build:
+      context: ./grinmorio-BOT
+    container_name: bot-service
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - API_BASE_URL=http://api:3000/api
+      - CLIENT_ID=${CLIENT_ID}
+    networks:
+      - app-network
+
+  # --- PAINÉIS DE GERENCIAMENTO ---
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - app-network
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: db
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@db:27017/
+      ME_CONFIG_BASICAUTH: "false"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis_commander
+    restart: unless-stopped
+    ports:
+      - "8082:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  # --- SCRAPER ---
+  scraper:
+    build:
+      context: ./grinmorio-DATA-SCRAPPER
+    container_name: dnd-scraper
+    depends_on:
+      - db
+    environment:
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_HOST=db
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - MONGO_PORT=27017
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+  redis_data:
+  portainer_data:
+
+networks:
+  app-network:
+    driver: bridge
