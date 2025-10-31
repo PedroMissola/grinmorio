@@ -1,6 +1,6 @@
 #  Grinmório - Assistente de D&D 5e para Discord
 
-![Banner do Grinmório](https://i.imgur.com/example.png) **Grinmório** é uma solução completa e robusta para mestres e jogadores de Dungeons & Dragons 5ª Edição, totalmente integrada ao Discord. O projeto utiliza uma arquitetura de microsserviços containerizada com Docker para oferecer uma experiência fluida e poderosa, combinando um bot interativo com um painel de gerenciamento web.
+**Grinmório** é uma solução completa e robusta para mestres e jogadores de Dungeons & Dragons 5ª Edição, totalmente integrada ao Discord. O projeto utiliza uma arquitetura de microsserviços containerizada com Docker para oferecer uma experiência fluida e poderosa, combinando um bot interativo com um painel de gerenciamento web.
 
 ---
 
