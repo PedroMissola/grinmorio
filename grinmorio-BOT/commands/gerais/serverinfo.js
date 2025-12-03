@@ -7,10 +7,6 @@ import log from '#utils/logger';
 export const data = new SlashCommandBuilder()
     .setName('serverinfo')
     .setDescription('Exibe informações detalhadas sobre o servidor atual')
-    .addBooleanOption(option =>
-        option.setName('privado')
-            .setDescription('Mostrar apenas para você?')
-            .setRequired(false))
     .setDMPermission(false);
 
 export const cooldown = 10;
@@ -104,8 +100,7 @@ function getServerFeatures(features) {
 
 export async function execute(interaction) {
     try {
-        const ephemeral = interaction.options.getBoolean('privado') ?? true;
-        await interaction.deferReply({ ephemeral });
+        await interaction.deferReply();
 
         const guild = interaction.guild;
 

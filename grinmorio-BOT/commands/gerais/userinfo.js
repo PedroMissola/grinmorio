@@ -11,10 +11,6 @@ export const data = new SlashCommandBuilder()
         option.setName('usuario')
             .setDescription('O usuário para ver informações (deixe vazio para ver as suas)')
             .setRequired(false))
-    .addBooleanOption(option =>
-        option.setName('privado')
-            .setDescription('Mostrar apenas para você?')
-            .setRequired(false))
     .setDMPermission(false);
 
 export const cooldown = 5;
@@ -94,9 +90,8 @@ function getActivities(member) {
 export async function execute(interaction) {
     try {
         const targetUser = interaction.options.getUser('usuario') || interaction.user;
-        const ephemeral = interaction.options.getBoolean('privado') ?? true;
 
-        await interaction.deferReply({ ephemeral });
+        await interaction.deferReply();
 
         // Busca informações completas do usuário
         let user;

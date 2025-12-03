@@ -23,21 +23,18 @@ export async function execute(interaction) {
     try {
         const newPrefix = interaction.options.getString('prefixo');
 
-        if (newPrefix.length > 5) {
-            return await reply.error(interaction, 'Prefixo Muito Longo', 'O prefixo não pode ter mais de 5 caracteres.');
+        if (newPrefix.length > 3) {
+            return await reply.error(interaction, 'Prefixo Muito Longo', 'O prefixo não pode ter mais de 3 caracteres.');
         }
 
         if (/\s/.test(newPrefix)) {
             return await reply.error(interaction, 'Prefixo Inválido', 'O prefixo não pode conter espaços.');
         }
 
-        // O deferReply já é feito pelo sendSafeReply no replies.js, então não é necessário aqui
-        // await interaction.deferReply({ ephemeral: true });
-
         const success = await updateGuildPrefix(interaction.client, interaction.guild.id, newPrefix);
 
         if (success) {
-            await reply.success(interaction, 'Prefixo Atualizado', `O prefixo de comandos do servidor foi alterado para `${newPrefix}`.`);
+            await reply.success(interaction, 'Prefixo Atualizado', `O prefixo de comandos do servidor foi alterado para \`${newPrefix}\`.`);
         } else {
             await reply.error(interaction, 'Erro ao Atualizar', 'Não foi possível atualizar o prefixo no banco de dados. Tente novamente mais tarde.');
         }

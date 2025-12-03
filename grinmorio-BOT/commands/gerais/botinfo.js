@@ -23,11 +23,7 @@ try {
 
 export const data = new SlashCommandBuilder()
     .setName('botinfo')
-    .setDescription('Exibe informações detalhadas e estatísticas do bot')
-    .addBooleanOption(option =>
-        option.setName('privado')
-            .setDescription('Mostrar apenas para você?')
-            .setRequired(false));
+    .setDescription('Exibe informações detalhadas e estatísticas do bot');
 
 export const cooldown = 5;
 
@@ -136,8 +132,7 @@ function getLatencyInfo(client) {
 
 export async function execute(interaction) {
     try {
-        const ephemeral = interaction.options.getBoolean('privado') ?? true;
-        await interaction.deferReply({ ephemeral });
+        await interaction.deferReply();
 
         const client = interaction.client;
 

@@ -14,7 +14,7 @@ export const permissions = {
 
 export async function execute(interaction) {
     // Responde inicialmente para medir a latência da API
-    const sent = await interaction.reply({ content: 'Pingando...', fetchReply: true, ephemeral: true });
+    const sent = await interaction.reply({ content: 'Pingando...', fetchReply: true, ephemeral: false });
 
     const apiLatency = sent.createdTimestamp - interaction.createdTimestamp;
     const websocketLatency = Math.round(interaction.client.ws.ping);

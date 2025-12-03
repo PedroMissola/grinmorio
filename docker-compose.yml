@@ -1,12 +1,16 @@
+version: '3.8'
+
 services:
+  # O Serviço do Bot (configuração de rede ajustada)
   bot:
     build:
       context: ./grinmorio-BOT
     container_name: bot-service
     restart: unless-stopped
     environment:
+      # Variáveis do Bot, que se conecta ao serviço 'api' via rede Docker
       - DISCORD_TOKEN=${DISCORD_TOKEN}
-      - API_BASE_URL=http://api:3000/api
+      - API_BASE_URL=${API_BASE_URL}
       - CLIENT_ID=${CLIENT_ID}
     volumes:
       - ./grinmorio-BOT:/app
@@ -14,8 +18,74 @@ services:
     networks:
       - app-network
 
+  # 1. Serviço da API (Service name: api)
+  api:
+    build:
+      context: ./grinmorio-DATABASE # Usa o Dockerfile na pasta DATABASE
+    container_name: grinmorio-api
+    restart: unless-stopped
+    ports:
+      - "${PORT}:${PORT}" # Expõe a porta para o ambiente externo
+    environment:
+      # A API usará as URIs completas para se conectar com autenticação
+      - PORT=${PORT}
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_URI=${REDIS_URI}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - mongo-db
+      - redis-db
+    volumes:
+      - ./grinmorio-DATABASE:/app
+      - api_node_modules:/app/node_modules
+    networks:
+      - app-network
+      
+  # 2. Serviço do MongoDB (O Banco de Dados Principal)
+  mongo-db:
+    image: mongo:6.0 # Versão estável com suporte a features de autenticação
+    container_name: mongo-db
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      # Variáveis de autenticação inicial (root)
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      # Estas variáveis são usadas para criar o usuário da API via script de inicialização
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+    volumes:
+      # Volume persistente para os dados
+      - mongo_data:/data/db
+      # Você deve adicionar um volume aqui para o script de inicialização do MongoDB (ex: /docker-entrypoint-initdb.d)
+    networks:
+      app-network:
+        aliases:
+          - mongo-db # Garante que o hostname interno seja 'mongo-db'
+
+  # 3. Serviço do Redis (Cache e Sistemas de Cooldowns)
+  redis-db:
+    image: redis:7.0-alpine # Imagem leve do Redis
+    container_name: redis-db
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      # Volume persistente para os dados
+      - redis_data:/data
+    networks:
+      app-network:
+        aliases:
+          - redis-db # Garante que o hostname interno seja 'redis-db'
+
+# Definição dos volumes para persistência de dados
 volumes:
   bot_node_modules:
+  api_node_modules:
+  mongo_data:
+  redis_data:
 
 networks:
   app-network:
