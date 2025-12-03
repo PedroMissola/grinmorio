@@ -1,5 +1,5 @@
 const Log = require('../models/Log');
-const { sendErrorResponse } = require('../utils/herrorHandler');
+const { sendErrorResponse } = require('../utils/errorHandler');
 
 /**
  * Records a new log entry.

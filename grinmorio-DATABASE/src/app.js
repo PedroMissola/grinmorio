@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const { globalErrorHandler } = require('./utils/herrorHandler');
+const { globalErrorHandler } = require('./utils/errorHandler');
 const rateLimiter = require('./middleware/rateLimiter');
 const { authenticateToken, authorizeRole } = require('./middleware/auth');
 

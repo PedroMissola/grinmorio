@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { sendErrorResponse } = require('../utils/herrorHandler');
+const { sendErrorResponse } = require('../utils/errorHandler');
 
 /**
  * Gets the ban status of a user.

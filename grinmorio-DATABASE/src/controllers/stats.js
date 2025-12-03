@@ -1,5 +1,5 @@
 const Stat = require('../models/Stat');
-const { sendErrorResponse } = require('../utils/herrorHandler');
+const { sendErrorResponse } = require('../utils/errorHandler');
 
 /**
  * Records a new stat/event entry.

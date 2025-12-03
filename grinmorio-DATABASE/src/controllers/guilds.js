@@ -1,5 +1,5 @@
 const Guild = require('../models/Guild');
-const { sendErrorResponse } = require('../utils/herrorHandler');
+const { sendErrorResponse } = require('../utils/errorHandler');
 
 /**
  * Gets the settings for a specific guild.
