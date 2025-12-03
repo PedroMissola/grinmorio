@@ -91,36 +91,36 @@ async function listarViaConsole() {
 
 /** Mostra um resumo da ficha de um utilizador. */
 async function findViaConsole(args) {
-  const userId = args[0];
-  const guildId = '1230675261419159562'; // Coloque aqui o ID do seu servidor principal
+  const [userId, guildId] = args;
 
-  if (!isValidDiscordId(userId)) return console.log('Uso: find <userId>');
-  if (guildId === 'ID_DO_SEU_SERVIDOR_PRINCIPAL') return console.log('AVISO: Configure o ID do servidor principal no comando "find".');
+  if (!isValidDiscordId(userId) || !isValidDiscordId(guildId)) {
+    return console.log('Uso: find <userId> <guildId>');
+  }
 
   try {
     const { data: p } = await api.get(`/personagens/${guildId}/${userId}`);
-    console.log(`\n--- Ficha de ${p.nome} (${userId}) ---`);
+    console.log(`\n--- Ficha de ${p.nome} (${userId}) em Servidor ${guildId} ---`);
     console.log(`  Raça: ${p.raca} | Classe: ${p.classe} | Nível: ${p.nivel}`);
     console.log(`  Atributos: FOR:${p.atributos.forca} DES:${p.atributos.destreza} CON:${p.atributos.constituicao} INT:${p.atributos.inteligencia} SAB:${p.atributos.sabedoria} CAR:${p.atributos.carisma}`);
     console.log(`------------------------------------`);
   } catch (error) {
-    console.log(`❌ Ficha não encontrada para o utilizador ${userId} no servidor configurado.`);
+    console.log(`❌ Ficha não encontrada para o utilizador ${userId} no servidor ${guildId}.`);
   }
 }
 
 /** Apaga a ficha de um utilizador, com confirmação. */
 async function deleteCharViaConsole(args) {
-  const userId = args[0];
-  const guildId = '1230675261419159562'; // Coloque aqui o ID do seu servidor principal
+  const [userId, guildId] = args;
 
-  if (!isValidDiscordId(userId)) return console.log('Uso: delete-char <userId>');
-  if (guildId === 'ID_DO_SEU_SERVIDOR_PRINCIPAL') return console.log('AVISO: Configure o ID do servidor principal no comando "delete-char".');
+  if (!isValidDiscordId(userId) || !isValidDiscordId(guildId)) {
+    return console.log('Uso: delete-char <userId> <guildId>');
+  }
 
-  rl.question(`Tem a certeza que quer APAGAR a ficha do utilizador ${userId}? (sim/não) `, async (answer) => {
+  rl.question(`Tem a certeza que quer APAGAR a ficha do utilizador ${userId} no servidor ${guildId}? (sim/não) `, async (answer) => {
     if (answer.toLowerCase() === 'sim') {
       try {
         await api.delete(`/personagens/${guildId}/${userId}`);
-        console.log(`Ficha do utilizador ${userId} apagada com sucesso.`);
+        console.log(`Ficha do utilizador ${userId} no servidor ${guildId} apagada com sucesso.`);
       } catch (error) {
         console.log('Ficha não encontrada ou erro ao apagar.');
       }
@@ -267,8 +267,8 @@ function mostrarAjuda() {
   console.log('  unban <userId>                                   - Desbane um utilizador.');
   console.log('  check <userId>                                   - Verifica o estado de ban de um utilizador.');
   console.log('  list                                             - Mostra a lista de utilizadores banidos.');
-  console.log('  find <userId>                                    - Mostra um resumo da ficha de um utilizador.');
-  console.log('  delete-char <userId>                             - Apaga a ficha de um utilizador.');
+  console.log('  find <userId> <guildId>                          - Mostra um resumo da ficha de um utilizador.');
+  console.log('  delete-char <userId> <guildId>                   - Apaga a ficha de um utilizador.');
   console.log('  say <canal> <msg>                                - Envia um anúncio global.');
   console.log('  dm <userId> <msg>                                - Envia uma DM para um utilizador.');
   console.log('  stats                                            - Mostra estatísticas do bot.');

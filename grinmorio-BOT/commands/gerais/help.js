@@ -1,11 +1,11 @@
 import {
   SlashCommandBuilder,
-  EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
 } from 'discord.js';
+import { customEmbed } from '#responses/embeds';
 
 const categorias = {
   gerais: {
@@ -78,12 +78,13 @@ const categoriaKeys = Object.keys(categorias);
 
 function criarEmbed(categoriaKey) {
   const cat = categorias[categoriaKey];
-  return new EmbedBuilder()
-    .setTitle(cat.title)
-    .setColor(0x5865f2)
-    .setDescription(cat.description)
-    .setFields(cat.fields) // Alterado de addFields para setFields para garantir que o conteúdo seja substituído
-    .setFooter({ text: 'Use os botões abaixo para navegar entre as categorias.' });
+  return customEmbed({
+    title: cat.title,
+    color: 0x5865f2,
+    description: cat.description,
+    fields: cat.fields,
+    footer: { text: 'Use os botões abaixo para navegar entre as categorias.' }
+  });
 }
 
 function criarBotoes(categoriaAtual) {

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
-import { reply } from '../../utils/responses/replies.js';
-import { customEmbed } from '../utils/responses/embeds.js';
-import { handleCommandError } from '../utils/errorHandler.js';
+import { reply } from '#responses/replies';
+import { customEmbed } from '#responses/embeds';
+import { handleCommandError } from '#utils/errorHandler';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 
 export const data = new SlashCommandBuilder()

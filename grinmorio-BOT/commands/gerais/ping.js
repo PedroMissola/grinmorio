@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
-import { reply } from '#utils/responses/replies';
-import { customEmbed } from '#utils/responses/embeds';
+import { reply } from '#responses/replies';
+import { customEmbed } from '#responses/embeds';
 
 export const data = new SlashCommandBuilder()
     .setName('ping')
