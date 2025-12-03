@@ -10,10 +10,6 @@ export const data = new SlashCommandBuilder()
   .addUserOption(option =>
     option.setName('usuario')
       .setDescription('O usuário para ver o avatar (deixe vazio para ver o seu)')
-      .setRequired(false))
-  .addBooleanOption(option =>
-    option.setName('privado')
-      .setDescription('Mostrar apenas para você?')
       .setRequired(false));
 
 export const cooldown = 3;
@@ -25,9 +21,8 @@ export const permissions = {
 export async function execute(interaction) {
   try {
     const targetUser = interaction.options.getUser('usuario') || interaction.user;
-    const ephemeral = interaction.options.getBoolean('privado') ?? false; // Padrão público para avatares
     
-    await interaction.deferReply({ ephemeral });
+    await interaction.deferReply();
 
     // Busca usuário completo para pegar banner/avatar customizado
     let user;

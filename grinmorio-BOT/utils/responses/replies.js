@@ -28,8 +28,8 @@ const isValidInteraction = (interaction) => {
  * @returns {Promise<void>}
  */
 const sendSafeReply = async (interaction, payload) => {
-  // Garante que sempre seja ephemeral
-  const safePayload = { ...payload, ephemeral: true };
+  // Respeita o valor de ephemeral passado no payload
+  const safePayload = { ...payload };
   
   try {
     // Se já respondeu ou diferiu, usa followUp
@@ -74,13 +74,14 @@ export const reply = {
     
     try {
       const embed = successEmbed(title, description);
-      await sendSafeReply(interaction, { embeds: [embed] });
+      await sendSafeReply(interaction, { embeds: [embed], ephemeral: true });
     } catch (error) {
       console.error('Erro ao enviar resposta de sucesso:', error);
       // Tenta enviar mensagem de erro como fallback
       try {
         await sendSafeReply(interaction, { 
-          content: '✅ Operação concluída com sucesso.' 
+          content: '✅ Operação concluída com sucesso.',
+          ephemeral: true
         });
       } catch (fallbackError) {
         console.error('Falha crítica ao enviar resposta de sucesso:', fallbackError);
@@ -103,13 +104,14 @@ export const reply = {
     
     try {
       const embed = errorEmbed(title, description);
-      await sendSafeReply(interaction, { embeds: [embed] });
+      await sendSafeReply(interaction, { embeds: [embed], ephemeral: true });
     } catch (error) {
       console.error('Erro ao enviar resposta de erro:', error);
       // Tenta enviar mensagem de texto simples como fallback
       try {
         await sendSafeReply(interaction, { 
-          content: '❌ Ocorreu um erro ao processar sua solicitação.' 
+          content: '❌ Ocorreu um erro ao processar sua solicitação.',
+          ephemeral: true
         });
       } catch (fallbackError) {
         console.error('Falha crítica ao enviar resposta de erro:', fallbackError);
@@ -132,13 +134,14 @@ export const reply = {
     
     try {
       const embed = infoEmbed(title, description);
-      await sendSafeReply(interaction, { embeds: [embed] });
+      await sendSafeReply(interaction, { embeds: [embed], ephemeral: true });
     } catch (error) {
       console.error('Erro ao enviar resposta de informação:', error);
       // Tenta enviar mensagem de texto simples como fallback
       try {
         await sendSafeReply(interaction, { 
-          content: 'ℹ️ Informação disponível.' 
+          content: 'ℹ️ Informação disponível.',
+          ephemeral: true
         });
       } catch (fallbackError) {
         console.error('Falha crítica ao enviar resposta de info:', fallbackError);
@@ -161,13 +164,14 @@ export const reply = {
     
     try {
       const embed = warnEmbed(title, description);
-      await sendSafeReply(interaction, { embeds: [embed] });
+      await sendSafeReply(interaction, { embeds: [embed], ephemeral: true });
     } catch (error) {
       console.error('Erro ao enviar resposta de aviso:', error);
       // Tenta enviar mensagem de texto simples como fallback
       try {
         await sendSafeReply(interaction, { 
-          content: '⚠️ Atenção necessária.' 
+          content: '⚠️ Atenção necessária.',
+          ephemeral: true
         });
       } catch (fallbackError) {
         console.error('Falha crítica ao enviar resposta de aviso:', fallbackError);
@@ -188,14 +192,16 @@ export const reply = {
     }
     
     try {
-      const payload = { ...options, ephemeral: options.ephemeral !== false };
+      // Padrão é PÚBLICO. Só é privado se options.ephemeral === true
+      const payload = { ...options, ephemeral: options.ephemeral === true };
       await sendSafeReply(interaction, payload);
     } catch (error) {
       console.error('Erro ao enviar resposta customizada:', error);
       // Tenta enviar mensagem genérica como fallback
       try {
         await sendSafeReply(interaction, { 
-          content: 'Resposta não disponível.' 
+          content: 'Resposta não disponível.',
+          ephemeral: true
         });
       } catch (fallbackError) {
         console.error('Falha crítica ao enviar resposta customizada:', fallbackError);

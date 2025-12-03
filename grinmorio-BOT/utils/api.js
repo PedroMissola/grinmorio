@@ -8,7 +8,6 @@ if (!API_BASE_URL) {
   throw new Error('A variável de ambiente API_BASE_URL não está definida.');
 }
 
-// Cria uma instância do Axios pré-configurada
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {

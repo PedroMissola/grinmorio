@@ -10,6 +10,7 @@ import { iniciarConsoleManager } from './utils/consoleBanManager.js';
 import log from './utils/logger.js';
 import { stopCleanupTimer } from './utils/security/cooldowns.js';
 import { trackEvent } from './utils/analytics.js';
+import { initializeGuildSettingsCache } from './utils/guildSettings.js';
 
 /**
  * @returns {boolean} True se todas as variáveis estão presentes
@@ -47,6 +48,7 @@ function createDiscordClient() {
     // Inicializa as coleções necessárias
     client.commands = new Collection();
     client.cooldowns = new Collection();
+    initializeGuildSettingsCache(client);
     
     log.info('Cliente Discord criado com sucesso');
     return client;
