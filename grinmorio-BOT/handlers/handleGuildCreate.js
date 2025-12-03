@@ -28,22 +28,18 @@ export default async function handleGuildCreate(guild) {
 
   try {
     const welcomeEmbed = embeds.info(
-      `Saudações, aventureiros de ${guild.name}!`,
-      `Sou seu **Assistente de Mesa D&D 5e** e estou aqui para tornar suas campanhas ainda mais épicas!`
+      `Saudações, ${guild.name}!`,
+      `Sou o **${guild.client.user.username}**, seu novo assistente de servidor!`
     )
       .setThumbnail(guild.client.user.displayAvatarURL())
       .addFields(
         {
-          name: '🎯 Primeiros Passos',
-          value: '• Digite `/` para descobrir todos os comandos.\n• Use `/help` para um guia completo.\n• Comece com `/ficha criar` para registrar seu personagem.',
-        },
-        {
-          name: '🎲 Rolagens Rápidas no Chat',
-          value: 'Tente digitar `1d20+5` ou `vantagem` diretamente no chat!',
+          name: '🎯 Comandos',
+          value: '• Digite `/` para descobrir todos os meus comandos.\n• Use `/help` para um guia completo.',
         }
       )
       .setFooter({
-        text: 'Que os dados rolem a seu favor! | Use /help para começar',
+        text: 'Estou aqui para ajudar!',
         iconURL: guild.iconURL() || undefined
       })
       .setTimestamp();

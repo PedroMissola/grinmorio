@@ -1,22 +1,18 @@
 import { embeds } from '../utils/responses/embeds.js';
 import log from '../utils/logger.js';
-import handleRollMessage from './handleRollMessage.js';
 import { trackEvent, sendLog } from '../utils/analytics.js';
 import { getGuildPrefix } from '#utils/guildSettings';
 
 export default async function handleMessage(client, message) {
   if (message.author.bot || !message.guild) return;
 
+  // Handle mentions
   if (message.mentions.has(client.user.id)) {
     const mentionEmbed = embeds.info(
         `Saudações, ${message.author.displayName}!`,
-        `Sou o **${client.user.username}**, seu assistente para D&D 5e! Digite \`/\` para ver meus comandos ou defina um prefixo com \`/setprefix\`.`
+        `Sou o **${client.user.username}**, seu assistente de servidor! Digite \`/\` para ver meus comandos ou defina um prefixo com \`/setprefix\`.`
       )
-      .setThumbnail(client.user.displayAvatarURL())
-      .addFields({
-        name: '🎲 Rolagens Rápidas no Chat',
-        value: '`1d20+5`, `vantagem`, `iniciativa(+3)`, `3#1d20+2`'
-      });
+      .setThumbnail(client.user.displayAvatarURL());
 
     try {
       await message.reply({ embeds: [mentionEmbed] });
@@ -38,33 +34,18 @@ export default async function handleMessage(client, message) {
     return;
   }
 
-  // Lógica para comandos de prefixo
+  // Handle prefix commands (example)
   const prefix = await getGuildPrefix(client, message.guild.id);
   if (message.content.startsWith(prefix)) {
       const args = message.content.slice(prefix.length).trim().split(/ +/);
       const commandName = args.shift().toLowerCase();
 
-      // Manipulador de comandos de prefixo simples
+      // Simple prefix command handler example
       if (commandName === 'ping') {
           const msg = await message.reply('Pingando...');
           const latency = msg.createdTimestamp - message.createdTimestamp;
           return await msg.edit(`Pong! Latência da mensagem: ${latency}ms. Latência da API: ${Math.round(client.ws.ping)}ms`);
       }
-      // Adicione outros comandos de prefixo aqui
-      
-      // Se um comando de prefixo foi processado (ou tentado), não continue para a rolagem de texto
-      return;
-  }
-
-  try {
-    await handleRollMessage(message);
-  } catch (error) {
-    log.error(`Erro não capturado no fluxo de handleMessage para "${message.content}":`, error);
-    sendLog('error', 'Erro inesperado ao processar mensagem de texto', {
-      content: message.content,
-      userId: message.author.id,
-      guildId: message.guild?.id,
-      errorMessage: error.message,
-    });
+      // Add other prefix commands here if needed
   }
 }

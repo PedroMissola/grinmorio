@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const { globalErrorHandler } = require('./utils/errorHandler');
+const { globalErrorHandler } = require('./utils/herrorHandler');
 const rateLimiter = require('./middleware/rateLimiter');
 const { authenticateToken, authorizeRole } = require('./middleware/auth');
 
@@ -9,6 +9,13 @@ require('dotenv').config();
 
 const connectDB = require('./config/db');
 const { connectRedis, getRedisClient } = require('./config/redis');
+
+// Import Routes
+const guildRoutes = require('./routes/guilds');
+const userRoutes = require('./routes/usuarios');
+const logRoutes = require('./routes/logs');
+const statRoutes = require('./routes/stats');
+
 
 const app = express();
 
@@ -39,14 +46,12 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Welcome to Grinmorio API! Use /health for status.' });
 });
 
+// Register Routes
+app.use('/api/guilds', guildRoutes);
+app.use('/api/usuarios', userRoutes);
+app.use('/api/logs', logRoutes);
+app.use('/api/stats', statRoutes);
 
-app.get('/api/admin-stats', authenticateToken, authorizeRole('coordenador'), (req, res) => {
-    res.json({ 
-        message: 'Acesso Administrativo Concedido.',
-        user: req.user,
-        stats: { total: 42, secrets: 'private_data' }
-    });
-});
 
 app.use(globalErrorHandler);
 

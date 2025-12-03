@@ -7,7 +7,7 @@ let botClient; // Variável para guardar a instância do client
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  prompt: 'D&D Bot > '
+  prompt: 'Grinmorio Bot > '
 });
 
 function isValidDiscordId(userId) {
@@ -87,48 +87,6 @@ async function listarViaConsole() {
     const errorMessage = error.response?.data?.message || 'Falha ao listar os usuários banidos.';
     console.error(`${errorMessage}`);
   }
-}
-
-/** Mostra um resumo da ficha de um utilizador. */
-async function findViaConsole(args) {
-  const [userId, guildId] = args;
-
-  if (!isValidDiscordId(userId) || !isValidDiscordId(guildId)) {
-    return console.log('Uso: find <userId> <guildId>');
-  }
-
-  try {
-    const { data: p } = await api.get(`/personagens/${guildId}/${userId}`);
-    console.log(`\n--- Ficha de ${p.nome} (${userId}) em Servidor ${guildId} ---`);
-    console.log(`  Raça: ${p.raca} | Classe: ${p.classe} | Nível: ${p.nivel}`);
-    console.log(`  Atributos: FOR:${p.atributos.forca} DES:${p.atributos.destreza} CON:${p.atributos.constituicao} INT:${p.atributos.inteligencia} SAB:${p.atributos.sabedoria} CAR:${p.atributos.carisma}`);
-    console.log(`------------------------------------`);
-  } catch (error) {
-    console.log(`❌ Ficha não encontrada para o utilizador ${userId} no servidor ${guildId}.`);
-  }
-}
-
-/** Apaga a ficha de um utilizador, com confirmação. */
-async function deleteCharViaConsole(args) {
-  const [userId, guildId] = args;
-
-  if (!isValidDiscordId(userId) || !isValidDiscordId(guildId)) {
-    return console.log('Uso: delete-char <userId> <guildId>');
-  }
-
-  rl.question(`Tem a certeza que quer APAGAR a ficha do utilizador ${userId} no servidor ${guildId}? (sim/não) `, async (answer) => {
-    if (answer.toLowerCase() === 'sim') {
-      try {
-        await api.delete(`/personagens/${guildId}/${userId}`);
-        console.log(`Ficha do utilizador ${userId} no servidor ${guildId} apagada com sucesso.`);
-      } catch (error) {
-        console.log('Ficha não encontrada ou erro ao apagar.');
-      }
-    } else {
-      console.log('Operação cancelada.');
-    }
-    rl.prompt();
-  });
 }
 
 /** Envia uma mensagem para um canal específico em todos os servidores. */
@@ -211,74 +169,21 @@ async function stopViaConsole() {
   rl.close();
 }
 
-/** Define um valor de iniciativa para um utilizador num servidor. */
-async function initSetViaConsole(args) {
-  const [guildId, userId, username, valor] = args;
-  if (!guildId || !userId || !username || !valor) {
-    return console.log('Uso: init-set <guildId> <userId> <username> <valor>');
-  }
-  try {
-    const { data } = await api.put('/rolagens/iniciativa', { guildId, userId, username, valor });
-    console.log(`✅ ${data.message}`);
-  } catch (error) {
-    console.error(`❌ ${error.response?.data?.message || 'Falha ao definir iniciativa.'}`);
-  }
-}
-
-/** Remove um utilizador da iniciativa de um servidor. */
-async function initRemoveViaConsole(args) {
-  const [guildId, userId] = args;
-  if (!guildId || !userId) {
-    return console.log('Uso: init-remove <guildId> <userId>');
-  }
-  try {
-    const { data } = await api.delete(`/rolagens/iniciativa/${guildId}/${userId}`);
-    console.log(`✅ ${data.message}`);
-  } catch (error) {
-    console.error(`❌ ${error.response?.data?.message || 'Falha ao remover da iniciativa.'}`);
-  }
-}
-
-/** Lista a iniciativa de um servidor específico. */
-async function initListViaConsole(args) {
-  const [guildId] = args;
-  if (!guildId) return console.log('Uso: init-list <guildId>');
-
-  try {
-    const { data } = await api.get(`/rolagens/iniciativa/${guildId}`);
-    if (data.listaOrdenada.length === 0) {
-      return console.log(`✅ A lista de iniciativa para o servidor ${guildId} está vazia.`);
-    }
-    console.log(`\n--- Ordem de Iniciativa [Servidor: ${guildId}] ---`);
-    data.listaOrdenada.forEach((item, i) => {
-      console.log(`  ${i + 1}º - ${item.username} (${item.userId}) - Valor: ${item.valor}`);
-    });
-    console.log(`-------------------------------------------`);
-  } catch (error) {
-    console.log(`❌ Não há iniciativas registadas para o servidor ${guildId}.`);
-  }
-}
-
 /** Mostra a ajuda atualizada. */
 function mostrarAjuda() {
   console.log('\nConsole Manager - Comandos:');
   console.log('─'.repeat(50));
-  console.log('  ban <userId> [motivo]                            - Bane um utilizador de usar o bot.');
-  console.log('  unban <userId>                                   - Desbane um utilizador.');
-  console.log('  check <userId>                                   - Verifica o estado de ban de um utilizador.');
-  console.log('  list                                             - Mostra a lista de utilizadores banidos.');
-  console.log('  find <userId> <guildId>                          - Mostra um resumo da ficha de um utilizador.');
-  console.log('  delete-char <userId> <guildId>                   - Apaga a ficha de um utilizador.');
-  console.log('  say <canal> <msg>                                - Envia um anúncio global.');
-  console.log('  dm <userId> <msg>                                - Envia uma DM para um utilizador.');
-  console.log('  stats                                            - Mostra estatísticas do bot.');
-  console.log('  ping-api                                         - Testa a conexão com a sua API.');
-  console.log('  clear / cls                                      - Limpa a tela do console.'); // COMANDO NOVO
-  console.log('  help                                             - Mostra esta ajuda.');
-  console.log('  stop                                             - Para o bot de forma segura.');
-  console.log('  init-set <guildId> <userId> <nome> <valor>       - Adiciona ou edita um jogador na iniciativa.');
-  console.log('  init-remove <guildId> <userId>                   - Remove um jogador da iniciativa.');
-  console.log('  init-list <guildId>                              - Lista a ordem de iniciativa de um servidor.');
+  console.log('  ban <userId> [motivo]     - Bane um utilizador de usar o bot.');
+  console.log('  unban <userId>            - Desbane um utilizador.');
+  console.log('  check <userId>            - Verifica o estado de ban de um utilizador.');
+  console.log('  list                      - Mostra a lista de utilizadores banidos.');
+  console.log('  say <canal> <msg>         - Envia um anúncio global.');
+  console.log('  dm <userId> <msg>         - Envia uma DM para um utilizador.');
+  console.log('  stats                     - Mostra estatísticas do bot.');
+  console.log('  ping-api                  - Testa a conexão com a sua API.');
+  console.log('  clear / cls               - Limpa a tela do console.');
+  console.log('  help                      - Mostra esta ajuda.');
+  console.log('  stop                      - Para o bot de forma segura.');
   console.log('─'.repeat(50));
 }
 
@@ -290,19 +195,14 @@ async function processarComando(comando) {
     case 'unban': await unbanViaConsole(args); break;
     case 'check': await checkViaConsole(args); break;
     case 'list': await listViaConsole(); break;
-    case 'find': await findViaConsole(args); break;
-    case 'delete-char': await deleteCharViaConsole(args); break;
     case 'say': await broadcastViaConsole(args); break;
     case 'dm': await dmViaConsole(args); break;
     case 'stats': statsViaConsole(); break;
     case 'ping-api': await pingApi(); break;
     case 'help': mostrarAjuda(); break;
     case 'stop': await stopViaConsole(); break;
-    case 'clear': case 'cls': clearViaConsole(); break; // COMANDO NOVO
+    case 'clear': case 'cls': clearViaConsole(); break;
     case 'exit': case 'quit': rl.close(); break;
-    case 'init-set': await initSetViaConsole(args); break;
-    case 'init-remove': await initRemoveViaConsole(args); break;
-    case 'init-list': await initListViaConsole(args); break;
     default:
       if (comando.length > 0) {
         console.log(`Comando "${acao}" não reconhecido. Digite "help" para ajuda.`);
@@ -314,7 +214,7 @@ async function processarComando(comando) {
 /** Função de inicialização, agora recebe o client. */
 export function iniciarConsoleManager(client) {
   botClient = client;
-  console.log('\nConsole Ban Manager (Modo API) iniciado!');
+  console.log('\nConsole Manager (Modo API) iniciado!');
   console.log('Digite "help" para ver os comandos disponíveis\n');
   rl.prompt();
 
