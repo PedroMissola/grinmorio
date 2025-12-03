@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
-import { reply } from '../utils/responses/replies.js';
+import { reply } from '../../utils/responses/replies.js';
 import { customEmbed } from '../utils/responses/embeds.js';
 import { handleCommandError } from '../utils/errorHandler.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
