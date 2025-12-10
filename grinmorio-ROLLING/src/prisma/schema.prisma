@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RollLog {
+  id              String   @id @default(uuid())
+  playerId        String
+  guildId         String
+  rawCommand      String
+  totalResult     Int
+  diceBreakdown   Json
+  manipulationTags Json
+  createdAt       DateTime @default(now())
+
+  @@index([playerId])
+  @@index([guildId])
+}
+
+model Stats {
+  id         String @id @default(uuid())
+  type       String // e.g., 'daily_rolls', 'most_used_dice'
+  key        String // e.g., '2023-11-28', 'd20'
+  value      Int
+  updatedAt  DateTime @updatedAt
+
+  @@unique([type, key])
+}
