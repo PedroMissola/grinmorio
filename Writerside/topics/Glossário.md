@@ -1,7 +1,5 @@
 # Glossário
 
-## 11. GLOSSÁRIO TÉCNICO
-
 Esta seção define os termos técnicos, conceitos estatísticos e tecnologias mencionadas ao longo deste documento, visando facilitar a compreensão da arquitetura do sistema RPED.
 
 ### A - C
