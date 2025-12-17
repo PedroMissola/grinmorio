@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="DOC-000101"
+                 name="Documentação"
+                 start-page="Introdução-e-Filosofia.md">
+
+    <toc-element topic="Introdução-e-Filosofia.md"/>
+    <toc-element topic="Mecânicas-Fundamentais.md"/>
+    <toc-element topic="Algoritmos-de-Equilíbrio-e-Correção.md"/>
+    <toc-element topic="Arquitetura-Técnica.md"/>
+    <toc-element topic="Experiência-do-Usuário-UX.md"/>
+    <toc-element topic="Glossário.md"/>
+</instance-profile>
